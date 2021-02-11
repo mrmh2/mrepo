@@ -31,12 +31,22 @@ class ManagedRepo(object):
     def __init__(self, base_path):
         self.base_path = pathlib.Path(base_path)
         self.data_path = self.base_path / "data"
-        repospec_fpath = self.base_path / "repospec.yml"
-        with open(repospec_fpath) as fh:
+        self.repospec_fpath = self.base_path / "repospec.yml"
+        with open(self.repospec_fpath) as fh:
             self.config = YAML().load(fh)
-        self.fname_format = self.config["fname_format"]
+        self.fname_template = self.config["fname_format"]
         self.itemclass = namedtuple("ItemSpecifier", self.config["item_fields"])
         self.fieldnames = self.config["item_fields"]
+
+    @property
+    def genotypes(self):
+
+        genotypes = set([
+            p.name
+            for p in pathlib.Path(self.data_path).iterdir()
+        ])
+
+        return genotypes
 
     def get_command(self, command_name):
         return self.config['commands'][command_name]
@@ -55,7 +65,7 @@ class ManagedRepo(object):
         filldict = dict(item_specifier.__dict__)
         filldict.update(**data_spec)
         
-        fname = self.fname_format.format(**filldict)
+        fname = self.fname_template.format(**filldict)
 
         dirpath = pathlib.Path(
             self.data_path,
@@ -93,7 +103,7 @@ class ManagedRepo(object):
         return available_specs
 
     def fname_to_(self, fname):
-            result = parse.parse(self.fname_format, fname).named
+            result = parse.parse(self.fname_template, fname).named
 
             # Check and extract the item
             assert set(self.fieldnames).issubset(set(result))
