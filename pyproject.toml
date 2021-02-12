@@ -4,10 +4,15 @@ version = "0.1.0"
 description = ""
 authors = ["Matthew Hartley <mhartley@cantab.net>"]
 
+[tool.poetry.scripts]
+echo-next-command = "mrepo.process:echo_next_command"
+echo-all-commands = "mrepo.process:echo_all_commands"
+
 [tool.poetry.dependencies]
 python = "^3.8"
 "ruamel.yaml" = "^0.16.12"
 parse = "^1.19.0"
+click = "^7.1.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

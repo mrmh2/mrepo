@@ -1,5 +1,6 @@
 import os
 import json
+import logging
 import pathlib
 
 from types import SimpleNamespace
@@ -8,7 +9,7 @@ from collections import defaultdict, namedtuple
 import parse
 from ruamel.yaml import YAML
 
-
+logger = logging.getLogger(__name__)
 
 
 class ItemSpec(SimpleNamespace):
@@ -149,7 +150,7 @@ class ManagedRepo(object):
         return list(all_input_specs - all_output_specs)
 
 
-    def commandline_from_command_and_item(self, command, item):
+    def commandline_from_command_and_item(self, command, item, automkdir=False):
 
         components = [command["command"]]
 
@@ -161,8 +162,10 @@ class ManagedRepo(object):
 
         for output in command["outputs"]:
             output_abspath = self.item_abspath(item, self.dataspec_dict[output])
-            output_dirpath = os.path.dirname(output_abspath)
-            print(f"mkdir -p {output_dirpath}")
+
+            if automkdir:
+                logger.info(f"Creating {output_abspath.parent}")
+                output_abspath.parent.mkdir(exist_ok=True, parents=True)
 
             components.append(output_abspath)
 
