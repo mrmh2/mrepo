@@ -1,6 +1,12 @@
+import logging
+import subprocess
+
 import click
 
 from mrepo import ManagedRepo, filter_specs
+
+
+logger = logging.getLogger(__name__)
 
 
 def find_specs_to_process(mr, command, select):
@@ -57,3 +63,24 @@ def echo_all_commands(repo_fpath, command_name, select):
         command_line = mr.commandline_from_command_and_item(command, spec)
         click.echo(command_line)
 
+
+@click.command()
+@click.argument('repo_fpath')
+@click.argument('command_name')
+@click.option('--select', default=None)
+def run_pipeline_stage_all(repo_fpath, command_name, select):
+
+    logging.basicConfig(level=logging.INFO)
+
+    mr = ManagedRepo(repo_fpath)
+    command = mr.get_command(command_name)
+    specs_to_process = find_specs_to_process(mr, command, select)
+
+    for spec in specs_to_process:
+        command_line = mr.commandline_from_command_and_item(
+            command,
+            spec,
+            automkdir=True
+        )
+        logger.info(f"Running {command_line}")
+        subprocess.run(command_line, shell=True)

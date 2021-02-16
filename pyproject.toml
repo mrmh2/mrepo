@@ -7,6 +7,7 @@ authors = ["Matthew Hartley <mhartley@cantab.net>"]
 [tool.poetry.scripts]
 echo-next-command = "mrepo.process:echo_next_command"
 echo-all-commands = "mrepo.process:echo_all_commands"
+run-pipeline-stage-all = "mrepo.process:run_pipeline_stage_all"
 
 [tool.poetry.dependencies]
 python = "^3.8"
