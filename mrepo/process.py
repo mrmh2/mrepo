@@ -33,7 +33,7 @@ def generate_next_command_line(repo_fpath, command_name, select):
 
     spec = next(specs_to_process)
 
-    command_line = mr.commandline_from_command_and_item(command, spec)
+    command_line = mr.commandline_from_command_and_item(command, spec, automkdir=True)
 
     return command_line
 
@@ -47,7 +47,6 @@ def echo_next_command(repo_fpath, command_name, select):
     command_line = generate_next_command_line(
         repo_fpath,
         command_name,
-        automkdir=True,
         select=select
     )
 

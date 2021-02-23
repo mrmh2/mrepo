@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mrepo"
-version = "0.1.1"
+version = "0.1.2"
 description = ""
 authors = ["Matthew Hartley <mhartley@cantab.net>"]
 
