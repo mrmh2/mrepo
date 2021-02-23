@@ -44,7 +44,12 @@ def generate_next_command_line(repo_fpath, command_name, select):
 @click.option('--select', default=None)
 def echo_next_command(repo_fpath, command_name, select):
 
-    command_line = generate_next_command_line(repo_fpath, command_name, select)
+    command_line = generate_next_command_line(
+        repo_fpath,
+        command_name,
+        automkdir=True,
+        select=select
+    )
 
     click.echo(command_line)
 
