@@ -98,21 +98,26 @@ class ManagedRepo(object):
         available_specs = defaultdict(list)
         for (dirpath, dirnames, filenames) in os.walk(self.data_path):
             for fname in filenames:
-                item_spec, data_spec = self.fname_to_(fname)
-                available_specs[item_spec].append(data_spec)
+                result = self.fname_to_(fname)
+                if result:
+                    item_spec, data_spec = result
+                    available_specs[item_spec].append(data_spec)
 
         return available_specs
 
     def fname_to_(self, fname):
-            result = parse.parse(self.fname_template, fname).named
+            result = parse.parse(self.fname_template, fname)
+
+            if result is None:
+                return None
 
             # Check and extract the item
-            assert set(self.fieldnames).issubset(set(result))
+            assert set(self.fieldnames).issubset(set(result.named))
             # item = self.itemclass(**{k: result[k] for k in self.fieldnames})
-            item = ItemSpec(**{k: result[k] for k in self.fieldnames})
+            item = ItemSpec(**{k: result.named[k] for k in self.fieldnames})
 
             # Get the datastage??? spsec
-            dataspec_fields = set(result) - set(self.fieldnames)
+            dataspec_fields = set(result.named) - set(self.fieldnames)
             dataspec = {k: result[k] for k in dataspec_fields}
 
             return item, dataspec
@@ -128,7 +133,7 @@ class ManagedRepo(object):
     def fname_for_spec(self, dataspec, spec):
         metadata = vars(spec)
         metadata.update(dataspec)
-        return self.fname_format.format(**metadata)
+        return self.fname_template.format(**metadata)
 
     def specs_to_process(self, command):
         by_dataspec = self.item_specs_by_dataspec()
